@@ -124,6 +124,11 @@ chmod +x ./utils/deploy.sh
 ./utils/deploy.sh
 ```
 
+```bash
+kubectl apply -f ./cdrs/pesto.vault.crd.yaml
+kubectl apply -f ./cdrs/deploy
+```
+
 ## ANNEX: Issues stack
 
 Starting the informer the first time, I got an error inside the pod:

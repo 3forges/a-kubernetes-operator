@@ -1,0 +1,43 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: baovaults.stable.pesto.io
+spec:
+  group: stable.pesto.io
+  scope: Namespaced
+  names:
+    plural: baovaults
+    singular: baovault
+    kind: baovault
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              sharedkeys_number:
+                type: integer
+              sharedkeys_corum:
+                type: integer
+              telegram_api_key_secret_name:
+                type: string
+              organization:
+                type: string
+    selectableFields:
+    - jsonPath: .spec.organization
+    additionalPrinterColumns:
+    - jsonPath: .spec.organization
+      name: Organization
+      type: string
+    - jsonPath: .spec.sharedkeys_number
+      name: Sharedkeys_number
+      type: integer
+    - jsonPath: .spec.sharedkeys_corum
+      name: Sharedkeys_corum
+      type: integer
+      

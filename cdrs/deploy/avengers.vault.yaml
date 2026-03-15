@@ -1,0 +1,11 @@
+---
+apiVersion: stable.pesto.io/v1
+kind: Baovault
+metadata:
+  name: supervault
+  namespace: marvel-mcu
+spec:
+  sharedkeys_number: 23
+  sharedkeys_corum: 7
+  telegram_api_key_secret_name: telegram_bot_apikey
+  organization: avengers
