@@ -11,9 +11,10 @@ import (
 	"time"
 
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/informers"
-	v1Informers "k8s.io/client-go/informers/core/v1"
-	"k8s.io/client-go/kubernetes"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/dynamic/dynamicinformer"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
@@ -21,13 +22,13 @@ import (
 
 func main() {
 	log.Printf("PESTO-OPERATOR - Now creating Kubernetes Client")
-	clientset, err := getClient()
+	client, err := getClient()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("PESTO-OPERATOR - Now setting up informer with clientset: %s", clientset)
+	log.Printf("PESTO-OPERATOR - Now setting up informer with clientset: %s", client)
 	// var pestoInformer v1.PodInformer
-	var pestoInformer = setupInformer(clientset)
+	var pestoInformer = setupInformer(client)
 
 	/**
 	 * We’re creating a context.Context that is cancelled on
@@ -43,51 +44,61 @@ func main() {
 	/*
 		pestoInformer.Run(ctx.Done())
 	*/
-	pestoInformer.Informer().Run(ctx.Done())
+	pestoInformer.Run(ctx.Done())
 }
 
-func setupInformer(clientset *kubernetes.Clientset) v1Informers.PodInformer {
-	informerFactory := informers.NewSharedInformerFactory(clientset, time.Minute)
-	podInformer := informerFactory.Core().V1().Pods()
+// (*dynamic.DynamicClient, error)
+func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
+	// informerFactory := informers.NewSharedInformerFactory(clientset, time.Minute)
+	// podInformer := informerFactory.Core().V1().Pods()
+	resource := schema.GroupVersionResource{Group: "apps", Version: "v1", Resource: "deployments"}
+	factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(dynClient, time.Minute, v1.NamespaceAll, nil)
+	pestoInformer := factory.ForResource(resource).Informer()
 
-	podInformer.Informer().AddEventHandler(
+	pestoInformer.AddEventHandler(
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				var catchedPod = obj.(*v1.Pod)
-				log.Printf("PESTO-OPERATOR - A new pod was created and detected by the operator Name : %s", catchedPod.Name)
-				log.Printf("PESTO-OPERATOR - A new pod was created and detected by the operator Labels : %s", fmt.Sprintf("%v", catchedPod.Labels))
-				log.Printf("PESTO-OPERATOR - A new pod was created and detected by the operator Kind : %s", catchedPod.Kind)
-				log.Printf("PESTO-OPERATOR - A new pod was created and detected by the operator APIVersion : %s", catchedPod.APIVersion)
-				log.Printf("PESTO-OPERATOR - A new pod was created and detected by the operator CreationTimestamp : %s", catchedPod.CreationTimestamp)
-				log.Printf("PESTO-OPERATOR - A new pod was created and detected by the operator Status : %s", catchedPod.Status)
-				log.Printf("PESTO-OPERATOR - A new pod was created and detected by the operator Spec.Containers[0].Image : %s", catchedPod.Spec.Containers[0].Image)
+
+				// var catchedResource = obj.(*v1.Pod)
+				var catchedResource = obj.(*unstructured.Unstructured)
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator Name : %s", catchedResource.GetName())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator Labels : %s", fmt.Sprintf("%v", catchedResource.GetLabels()))
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator Kind : %s", catchedResource.GetKind())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator APIVersion : %s", catchedResource.GetAPIVersion())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator CreationTimestamp : %s", catchedResource.GetCreationTimestamp())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator Namespace : %s", catchedResource.GetNamespace())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].Subresource : %s", catchedResource.GetManagedFields()[0].Subresource)
 
 			},
 			UpdateFunc: func(oldObj, newObj interface{}) {
-				var catchedPodOldObj = oldObj.(*v1.Pod)
-				var catchedPodNewObj = newObj.(*v1.Pod)
-				log.Printf("PESTO-OPERATOR - A pod was update is on the way and detected by the operator : %s", catchedPodNewObj.Name)
-				log.Printf("PESTO-OPERATOR - A pod was update is on the way and detected by the operator : %s", catchedPodNewObj.Labels)
-				log.Printf("PESTO-OPERATOR - The pod that is being updated shall become Name: %s", catchedPodOldObj.Name)
-				log.Printf("PESTO-OPERATOR - The pod that is being updated shall become Labels: %s", catchedPodOldObj.Labels)
+				// var catchedResourceOldObj = oldObj.(*v1.Pod)
+				// var catchedResourceNewObj = newObj.(*v1.Pod)
+				var catchedResourceOldObj = oldObj.(*unstructured.Unstructured)
+				var catchedResourceNewObj = newObj.(*unstructured.Unstructured)
+
+				log.Printf("PESTO-OPERATOR - A deployment was update is on the way and detected by the operator : %s", catchedResourceNewObj.GetName())
+				log.Printf("PESTO-OPERATOR - A deployment was update is on the way and detected by the operator : %s", catchedResourceNewObj.GetLabels())
+				log.Printf("PESTO-OPERATOR - The deployment that is being updated shall become Name: %s", catchedResourceOldObj.GetName())
+				log.Printf("PESTO-OPERATOR - The deployment that is being updated shall become Labels: %s", catchedResourceOldObj.GetLabels())
 			},
 			DeleteFunc: func(obj interface{}) {
-				// var catchedPod = obj.(*v1.Pod)
+				// var catchedResource = obj.(*v1.Pod)
 				//panic: interface conversion: interface {} is *v1.Pod, not *client.V1Pod [recovered, repanicked]
 				//
 
-				var catchedPod = obj.(*v1.Pod)
-				log.Printf("PESTO-OPERATOR - An existing pod was deleted and that was detected by the operator Name : %s", catchedPod.Name)
+				// var catchedResource = obj.(*v1.Pod)
+				var catchedResource = obj.(*unstructured.Unstructured)
+				log.Printf("PESTO-OPERATOR - An existing deployment was deleted and that was detected by the operator Name : %s", catchedResource.GetName())
 				// Handle pod deletion event
-				log.Printf("PESTO-OPERATOR - An existing pod was deleted and that was detected by the operator Namespace : %s", catchedPod.Namespace)
-				log.Printf("PESTO-OPERATOR - An existing pod was deleted and that was detected by the operator Labels : %s", catchedPod.Labels)
+				log.Printf("PESTO-OPERATOR - An existing deployment was deleted and that was detected by the operator Namespace : %s", catchedResource.GetNamespace())
+				log.Printf("PESTO-OPERATOR - An existing deployment was deleted and that was detected by the operator Labels : %s", catchedResource.GetLabels())
 			},
 		},
 	)
-	return podInformer
+	return pestoInformer
 }
 
-func getClient() (*kubernetes.Clientset, error) {
+func getClient() (*dynamic.DynamicClient, error) {
 	kubeConfig := os.Getenv("KUBECONFIG")
 
 	var clusterConfig *rest.Config
@@ -100,19 +111,23 @@ func getClient() (*kubernetes.Clientset, error) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
+	clusterClient, err := dynamic.NewForConfig(clusterConfig)
+	if err != nil {
+		log.Fatalln(err)
+		return nil, err
+	}
 	/*
 		clusterClient, err := dynamic.NewForConfig(clusterConfig)
 		if err != nil {
 			log.Fatalln(err)
 		}
+
+		clientset, err := kubernetes.NewForConfig(clusterConfig)
+		if err != nil {
+			log.Fatalln(fmt.Errorf("failed to initialise clientset from config: %s", err))
+			return nil, err
+		}
 	*/
 
-	clientset, err := kubernetes.NewForConfig(clusterConfig)
-	if err != nil {
-		log.Fatalln(fmt.Errorf("failed to initialise clientset from config: %s", err))
-		return nil, err
-	}
-
-	return clientset, nil
+	return clusterClient, nil
 }
