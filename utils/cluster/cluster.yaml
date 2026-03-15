@@ -1,0 +1,56 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+# containerdConfigPatches:
+# - |-
+#   [plugins."io.containerd.grpc.v1.cri".registry]
+#     config_path = "/etc/containerd/certs.d"
+# patch the generated kubeadm config with some extra settings
+nodes:
+- role: control-plane
+  extraMounts:
+  - hostPath: /etc/timezone
+    containerPath: /etc/timezone
+    readOnly: true
+  # - hostPath: /etc/localtime
+  #   containerPath: /etc/localtime
+  #   readOnly: true
+- role: worker
+  extraMounts:
+  - hostPath: /etc/timezone
+    containerPath: /etc/timezone
+    readOnly: true
+  # - hostPath: /etc/localtime
+  #   containerPath: /etc/localtime
+  #   readOnly: true
+- role: worker
+  extraMounts:
+  - hostPath: /etc/timezone
+    containerPath: /etc/timezone
+    readOnly: true
+  # - hostPath: /etc/localtime
+  #   containerPath: /etc/localtime
+  #   readOnly: true
+- role: worker
+  extraMounts:
+  - hostPath: /etc/timezone
+    containerPath: /etc/timezone
+    readOnly: true
+  # - hostPath: /etc/localtime
+  #   containerPath: /etc/localtime
+  #   readOnly: true
+- role: worker
+  extraMounts:
+  - hostPath: /etc/timezone
+    containerPath: /etc/timezone
+    readOnly: true
+  # - hostPath: /etc/localtime
+  #   containerPath: /etc/localtime
+  #   readOnly: true
+- role: worker
+  extraMounts:
+  - hostPath: /etc/timezone
+    containerPath: /etc/timezone
+    readOnly: true
+  # - hostPath: /etc/localtime
+  #   containerPath: /etc/localtime
+  #   readOnly: true
