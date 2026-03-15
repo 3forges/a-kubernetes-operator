@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pesto-operator
+  namespace: pesto-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pesto-operator
+  template:
+    metadata:
+      labels:
+        app: pesto-operator
+    spec:
+      serviceAccountName: pesto-operator
+      containers:
+        - name: operator
+          image: pesto-operator:0.0.3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WATCH_NAMESPACE
+              value: ""
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
