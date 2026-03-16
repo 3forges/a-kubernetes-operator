@@ -61,7 +61,7 @@ func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 	pestoInformer.AddEventHandler(
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-
+				// to get the value of fields defined by the CRD: https://medium.com/@caiorcferreira/the-kubernetes-dynamic-client-cd14af2047f5
 				// var catchedResource = obj.(*v1.Pod)
 				var catchedResource = obj.(*unstructured.Unstructured)
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator Name : %s", catchedResource.GetName())
@@ -77,11 +77,21 @@ func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].FieldsV1 : %s", catchedResource.GetManagedFields()[0].FieldsV1)
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].FieldsV1.Raw : %s", catchedResource.GetManagedFields()[0].FieldsV1.Raw)
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].FieldsType : %s", catchedResource.GetManagedFields()[0].FieldsType)
+
+				sharedkeys_corum, found, err := unstructured.NestedInt64(catchedResource.UnstructuredContent(), "spec", "sharedkeys_corum")
+				sharedkeys_number, found2, err2 := unstructured.NestedInt64(catchedResource.UnstructuredContent(), "spec", "sharedkeys_number")
+				if found && (err != nil) {
+
+					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_corum : %s", sharedkeys_corum)
+				}
+				if found2 && (err2 != nil) {
+					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_number : %s", sharedkeys_number)
+				}
 			},
 			UpdateFunc: func(oldObj, newObj interface{}) {
 				// var catchedResourceOldObj = oldObj.(*v1.Pod)
 				// var catchedResourceNewObj = newObj.(*v1.Pod)
-				var catchedResourceOldObj = oldObj.(*unstructured.Unstructured)
+				// var catchedResourceOldObj = oldObj.(*unstructured.Unstructured)
 				var catchedResourceNewObj = newObj.(*unstructured.Unstructured)
 
 				log.Printf("PESTO-OPERATOR - A deployment update is on the way and detected by the operator : %s", catchedResourceNewObj.GetName())
@@ -92,6 +102,9 @@ func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 				log.Printf("PESTO-OPERATOR - A new deployment update is on the way and detected by the operator catchedResourceNewObj.GetManagedFields()[0].SwaggerDoc() : %s", catchedResourceNewObj.GetManagedFields()[0].SwaggerDoc())
 				log.Printf("PESTO-OPERATOR - A new deployment update is on the way and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsV1 : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsV1)
 				log.Printf("PESTO-OPERATOR - A new deployment update is on the way and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsV1.Raw : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsV1.Raw)
+				log.Printf("PESTO-OPERATOR - A new deployment update is on the way and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsType : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsType)
+
+				log.Printf("PESTO-OPERATOR - A new deployment update is on the way and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsType : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsType)
 				log.Printf("PESTO-OPERATOR - A new deployment update is on the way and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsType : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsType)
 				// log.Printf("PESTO-OPERATOR - The deployment that is being updated shall become Name: %s", catchedResourceOldObj.GetName())
 				// log.Printf("PESTO-OPERATOR - The deployment that is being updated shall become Labels: %s", catchedResourceOldObj.GetLabels())
