@@ -1,6 +1,6 @@
 ---
 apiVersion: stable.pesto.io/v1
-kind: Baovault
+kind: baovault
 metadata:
   name: supervault
   namespace: marvel-mcu

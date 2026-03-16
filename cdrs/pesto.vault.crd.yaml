@@ -6,9 +6,9 @@ spec:
   group: stable.pesto.io
   scope: Namespaced
   names:
-    plural: baovaults
-    singular: baovault
-    kind: baovault
+    plural: Baovaults
+    singular: Baovault
+    kind: Baovault
   versions:
   - name: v1
     served: true
