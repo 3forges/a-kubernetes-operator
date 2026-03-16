@@ -71,7 +71,12 @@ func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator CreationTimestamp : %s", catchedResource.GetCreationTimestamp())
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator Namespace : %s", catchedResource.GetNamespace())
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].Subresource : %s", catchedResource.GetManagedFields()[0].Subresource)
-
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0] : %s", catchedResource.GetManagedFields())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0] : %s", catchedResource.GetManagedFields()[0])
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].SwaggerDoc() : %s", catchedResource.GetManagedFields()[0].SwaggerDoc())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].FieldsV1 : %s", catchedResource.GetManagedFields()[0].FieldsV1)
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].FieldsV1.Raw : %s", catchedResource.GetManagedFields()[0].FieldsV1.Raw)
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResource.GetManagedFields()[0].FieldsType : %s", catchedResource.GetManagedFields()[0].FieldsType)
 			},
 			UpdateFunc: func(oldObj, newObj interface{}) {
 				// var catchedResourceOldObj = oldObj.(*v1.Pod)
@@ -81,6 +86,12 @@ func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 
 				log.Printf("PESTO-OPERATOR - A deployment was update is on the way and detected by the operator : %s", catchedResourceNewObj.GetName())
 				log.Printf("PESTO-OPERATOR - A deployment was update is on the way and detected by the operator : %s", catchedResourceNewObj.GetLabels())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResourceNewObj.GetManagedFields()[0] : %s", catchedResourceNewObj.GetManagedFields())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResourceNewObj.GetManagedFields()[0] : %s", catchedResourceNewObj.GetManagedFields()[0])
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResourceNewObj.GetManagedFields()[0].SwaggerDoc() : %s", catchedResourceNewObj.GetManagedFields()[0].SwaggerDoc())
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsV1 : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsV1)
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsV1.Raw : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsV1.Raw)
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator catchedResourceNewObj.GetManagedFields()[0].FieldsType : %s", catchedResourceNewObj.GetManagedFields()[0].FieldsType)
 				log.Printf("PESTO-OPERATOR - The deployment that is being updated shall become Name: %s", catchedResourceOldObj.GetName())
 				log.Printf("PESTO-OPERATOR - The deployment that is being updated shall become Labels: %s", catchedResourceOldObj.GetLabels())
 			},
