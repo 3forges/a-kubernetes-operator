@@ -82,11 +82,13 @@ func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 				sharedkeys_number, found2, err2 := unstructured.NestedInt64(catchedResource.UnstructuredContent(), "spec", "sharedkeys_number")
 				if found && (err != nil) {
 
-					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_corum : %s", sharedkeys_corum)
+					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_corum : %d", sharedkeys_corum)
 				}
 				if found2 && (err2 != nil) {
-					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_number : %s", sharedkeys_number)
+					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_number : %d", sharedkeys_number)
 				}
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_corum : %d", sharedkeys_corum)
+				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_number : %d", sharedkeys_number)
 			},
 			UpdateFunc: func(oldObj, newObj interface{}) {
 				// var catchedResourceOldObj = oldObj.(*v1.Pod)
