@@ -127,6 +127,9 @@ chmod +x ./utils/deploy.sh
 ```bash
 kubectl apply -f ./cdrs/pesto.vault.crd.yaml
 kubectl apply -f ./cdrs/deploy
+
+kubectl get baovaults --all-namespaces
+
 ```
 
 ## ANNEX: Issues stack
