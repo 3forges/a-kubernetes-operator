@@ -51,7 +51,10 @@ func main() {
 func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 	// informerFactory := informers.NewSharedInformerFactory(clientset, time.Minute)
 	// podInformer := informerFactory.Core().V1().Pods()
+
+	// here very important: the resource MUST be plural form or the informer reflector will fail
 	resource := schema.GroupVersionResource{Group: "stable.pesto.io", Version: "v1", Resource: "baovaults"}
+
 	factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(dynClient, time.Minute, v1.NamespaceAll, nil)
 	pestoInformer := factory.ForResource(resource).Informer()
 
