@@ -80,11 +80,11 @@ func setupInformer(dynClient *dynamic.DynamicClient) cache.SharedIndexInformer {
 
 				sharedkeys_corum, found, err := unstructured.NestedInt64(catchedResource.UnstructuredContent(), "spec", "sharedkeys_corum")
 				sharedkeys_number, found2, err2 := unstructured.NestedInt64(catchedResource.UnstructuredContent(), "spec", "sharedkeys_number")
-				if found && (err != nil) {
+				if found || (err != nil) {
 
 					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_corum : %d", sharedkeys_corum)
 				}
-				if found2 && (err2 != nil) {
+				if found2 || (err2 != nil) {
 					log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_number : %d", sharedkeys_number)
 				}
 				log.Printf("PESTO-OPERATOR - A new deployment was created and detected by the operator sharedkeys_corum : %d", sharedkeys_corum)
